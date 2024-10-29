@@ -3,7 +3,7 @@ const purchaseOrderController = require('../Controllers/purchaseorderController'
 const router = express.Router();
 
 // Route to create a new purchase order
-router.post('/create', purchaseOrderController.createPurchaseOrder);
+router.post('/', purchaseOrderController.createPurchaseOrder);
 
 // Route to get all purchase orders
 router.get('/', purchaseOrderController.getAllPurchaseOrders);

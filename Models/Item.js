@@ -14,7 +14,7 @@ const itemSchema = new mongoose.Schema({
     required: [true, 'Item name is required'],
     trim: true,
   },
-  inventoryLocation: {
+ location: {
     type: String,
     required: [true, 'Inventory location is required'],
   },
@@ -48,15 +48,9 @@ const itemSchema = new mongoose.Schema({
     required: [true, 'Unit price is required'],
     min: [0, 'Unit price must be a positive number'],
   },
-  images: {
-    type: [String], 
-    validate: {
-      validator: function (images) {
-        return images.every(url => typeof url === 'string' && url.length > 0);
-      },
-      message: 'Each image must be a valid URL string',
-    },
-  },
+  images: [{
+    type: String,
+  }],
   status: {
     type: String,
     enum: ['Enabled', 'Disabled'],
