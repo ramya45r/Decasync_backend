@@ -30,13 +30,7 @@ const itemSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Supplier',
     required: true,
-    validate: {
-      validator: async function (value) {
-        const supplier = await mongoose.model('Supplier').findById(value);
-        return supplier && supplier.status === 'Active';
-      },
-      message: 'Supplier must be active and exist in the system',
-    },
+  
   },
   stockUnit: {
     type: String,

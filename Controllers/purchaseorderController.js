@@ -2,37 +2,31 @@ const PurchaseOrder = require('../Models/PurchaseOrder');
 const PurchaseOrderItem = require('../Models/PurchaseOrderItem');
 const Supplier = require('../Models/Supplier');
 
-// Create a new Purchase Order
 exports.createPurchaseOrder = async (req, res) => {
   try {
-    // Validate supplier status
-    const supplier = await Supplier.findById(req.body.supplierId);
-    if (!supplier || supplier.status !== 'Active') {
-      return res.status(400).json({ message: 'Supplier must be active and exist in the system' });
-    }
-console.log(req.body,'req.body.items');
 
-    // Calculate totals for the order
     const items = req.body.items.map((item) => ({
       itemId: item._id,
       orderQty: item.orderQty,
       unitPrice: item.unitPrice,
       discount: item.discount,
+      packingUnit: item.packingUnit,
       itemAmount: item.orderQty * item.unitPrice,
       netAmount: item.orderQty * item.unitPrice - item.discount,
     }));
+console.log(items,'items');
 
     const itemTotal = items.reduce((total, item) => total + item.itemAmount, 0);
     const discountTotal = items.reduce((total, item) => total + item.discount, 0);
     const netAmount = itemTotal - discountTotal;
 
-    // Create the purchase order document
     const purchaseOrder = new PurchaseOrder({
       orderNo: req.body.orderNo,
       orderDate: req.body.orderDate,
       supplierId: req.body.supplierId,
       itemTotal,
       discount: discountTotal,
+      
       netAmount,
       items,
     });
@@ -45,7 +39,6 @@ console.log(req.body,'req.body.items');
   }
 };
 
-// Get all Purchase Orders
 exports.getAllPurchaseOrders = async (req, res) => {
   try {
     const purchaseOrders = await PurchaseOrder.find().populate('supplierId').populate('items.itemId');
@@ -55,7 +48,6 @@ exports.getAllPurchaseOrders = async (req, res) => {
   }
 };
 
-// Get a single Purchase Order by ID
 exports.getPurchaseOrderById = async (req, res) => {
   try {
     const purchaseOrder = await PurchaseOrder.findById(req.params.id).populate('supplierId');
@@ -71,12 +63,11 @@ exports.getPurchaseOrderById = async (req, res) => {
   }
 };
 
-// Update a Purchase Order
+// Update 
 exports.updatePurchaseOrder = async (req, res) => {
   try {
     const { supplierId, items } = req.body;
 
-    // Calculate itemTotal, discount, and netAmount
     let itemTotal = 0;
     let discount = 0;
 
@@ -99,7 +90,6 @@ exports.updatePurchaseOrder = async (req, res) => {
       return res.status(404).json({ message: 'Purchase Order not found' });
     }
 
-    // Update PurchaseOrderItems
     await PurchaseOrderItem.deleteMany({ purchaseOrderId: purchaseOrder._id });
     for (const item of items) {
       const { itemId, stockUnit, unitPrice, packingUnit, orderQty, discount: itemDiscount } = item;
@@ -127,7 +117,7 @@ exports.updatePurchaseOrder = async (req, res) => {
   }
 };
 
-// Delete a Purchase Order
+// Delete 
 exports.deletePurchaseOrder = async (req, res) => {
   try {
     const purchaseOrder = await PurchaseOrder.findByIdAndDelete(req.params.id);
@@ -136,7 +126,6 @@ exports.deletePurchaseOrder = async (req, res) => {
       return res.status(404).json({ message: 'Purchase Order not found' });
     }
 
-    // Delete related PurchaseOrderItems
     await PurchaseOrderItem.deleteMany({ purchaseOrderId: purchaseOrder._id });
 
     res.status(200).json({ message: 'Purchase Order deleted successfully' });

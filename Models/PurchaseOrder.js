@@ -39,6 +39,8 @@ const purchaseOrderSchema = new mongoose.Schema(
         itemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', required: true },
         orderQty: { type: Number, required: true },
         unitPrice: { type: Number, required: true },
+        packingUnit: { type: String, required: true },
+
         discount: { type: Number, default: 0 },
         itemAmount: { type: Number, required: true }, 
         netAmount: { type: Number, required: true }, 
