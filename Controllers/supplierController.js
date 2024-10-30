@@ -18,7 +18,14 @@ exports.getAllSuppliers = async (req, res) => {
     res.status(500).json({ message: 'Error retrieving suppliers', error });
   }
 };
-
+exports.getAllactiveSuppliers = async (req, res) => {
+  try {
+    const suppliers = await Supplier.find({status:"Active"});
+    res.status(200).json(suppliers);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving suppliers', error });
+  }
+};
 exports.getSupplierById = async (req, res) => {
   try {
     const supplier = await Supplier.findById(req.params.id);
