@@ -22,6 +22,20 @@ exports.getAllItems = async (req, res) => {
   }
 };
 
+exports.singlesupplieritem = async (req, res) => {
+  try {
+    const { supplierId } = req.query;
+    if (!supplierId) {
+      return res.status(400).json({ error: 'Supplier ID is required' });
+    }
+
+    const items = await Item.find({ supplierId });
+    res.json(items);
+  } catch (error) {
+    console.error('Error fetching items:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 exports.getItemById = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id).populate('supplierId', 'name');
